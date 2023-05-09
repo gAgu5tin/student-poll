@@ -30,21 +30,21 @@ const jobList = (req, res) => {
 /***************
  * The poll function receives the user input and stores it the database
  **************/
-const poll = (req, res, next) => {
-  const { email, JobTitle, CreatorEmail } = req.body;
-
+const poll = (req, res) => {
+  const { email, SchoolID, JobTitle, CreatorEmail } = req.body;
+ 
   bcrypt
     .hash(email.split("@")[0], process.env.SALT)
     .then((hashedUser) => {
       return new Promise((resolve, reject) => {
         dbUserConn.query(
           `
-                        Replace Student_Job_Interest 
-                        (User, School, JobTitle, CreatorEmail)
+                        Replace Student_Job_Interest
+                        (User, School, SchoolID, JobTitle, CreatorEmail)
                         values
-                        (?,?,?,?);
+                        (?,?,?,?,?);
                 `,
-          [hashedUser, email.split("@")[1], JobTitle, CreatorEmail],
+          [hashedUser, email.split("@")[1], SchoolID, JobTitle, CreatorEmail],
           (err, results) => {
             if (err) {
               reject(err);
@@ -60,8 +60,8 @@ const poll = (req, res, next) => {
       console.log(err)
       res.sendStatus(500)
     });
-};
-
+ };
+  
 /**************
  * The results function returns the poll results to the browser
  **************/
